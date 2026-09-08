@@ -447,6 +447,12 @@
         }
 
         // TÍNH ĐIỂM & CHẤM BÀI
+// BẬT / TẮT HIỂN THỊ ĐÁP ÁN VÀ GIẢI THÍCH
+        // false: CHỈ hiện điểm (Ẩn đáp án & giải thích)
+        // true : Hiện điểm + HIỂN THỊ ĐÁP ÁN & GIẢI THÍCH CHI TIẾT
+        const SHOW_EXPLANATION = false; 
+
+        // TÍNH ĐIỂM & CHẤM BÀI
         function checkAnswers(examId) {
             const examData = dataExams.find(e => e.id === examId);
             const form = document.getElementById(`form_${examId}`);
@@ -459,30 +465,38 @@
                 const options = qBox.querySelectorAll('.option-item');
                 const selected = form.querySelector(`input[name="q_${examId}_${index}"]:checked`);
 
-                // Hiện phần giải thích
-                expBox.style.display = 'block';
+                // Reset trạng thái hiển thị
+                expBox.style.display = 'none';
                 qBox.classList.remove('correct', 'incorrect');
                 options.forEach(opt => opt.classList.remove('correct-option', 'wrong-option'));
 
-                // Đánh dấu phương án đúng bằng màu xanh
-                options.forEach(opt => {
-                    const radio = opt.querySelector('input');
-                    if (radio.value === qObj.ans) {
-                        opt.classList.add('correct-option');
-                    }
-                });
-
-                // Kiểm tra lựa chọn của học sinh
+                // Kiểm tra đáp án để tính điểm
                 if (selected) {
                     if (selected.value === qObj.ans) {
                         correctCount++;
-                        qBox.classList.add('correct');
+                    }
+                }
+
+                // NẾU BẠN BẬT "SHOW_EXPLANATION = true" THÌ MỚI HIỆN ĐÁP ÁN & GIẢI THÍCH
+                if (SHOW_EXPLANATION) {
+                    expBox.style.display = 'block';
+                    options.forEach(opt => {
+                        const radio = opt.querySelector('input');
+                        if (radio.value === qObj.ans) {
+                            opt.classList.add('correct-option');
+                        }
+                    });
+
+                    if (selected) {
+                        if (selected.value === qObj.ans) {
+                            qBox.classList.add('correct');
+                        } else {
+                            qBox.classList.add('incorrect');
+                            selected.parentElement.classList.add('wrong-option');
+                        }
                     } else {
                         qBox.classList.add('incorrect');
-                        selected.parentElement.classList.add('wrong-option');
                     }
-                } else {
-                    qBox.classList.add('incorrect'); // Chưa làm
                 }
             });
 
@@ -491,6 +505,7 @@
             scoreBoard.innerHTML = `🎉 BẠN ĐÃ ĐẠT: ${correctCount}/${examData.questions.length} CÂU ĐÚNG! 🎉`;
             scoreBoard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
     </script>
 </body>
 </html>
