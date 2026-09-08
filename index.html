@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm từ vựng - Lớp Anh thầy Kết</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #588b2c; --light-green: #e8f5e9; --farm-yellow: #ffca28;
+            --farm-orange: #f57c00; --wood-brown: #795548; --bg-color: #f1f8e9; --white: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); background-image: radial-gradient(#c8e6c9 15%, transparent 16%); background-size: 30px 30px; color: #333; padding-bottom: 50px; }
+        
+        /* HEADER */
+        header { background: linear-gradient(135deg, #a1887f, var(--wood-brown)); color: var(--farm-yellow); text-align: center; padding: 25px 15px; border-bottom: 8px solid #4e342e; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; }
+        .home-btn { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); background: var(--farm-yellow); color: #4e342e; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border: 2px solid #fff; transition: all 0.3s ease; z-index: 10; }
+        .home-btn:hover { background: var(--farm-orange); color: #fff; transform: translateY(-50%) scale(1.1); }
+        .home-btn svg { width: 24px; height: 24px; fill: currentColor; }
+        header h1 { font-family: 'Comfortaa', cursive; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding: 0 40px; }
+        header p { color: #fff; margin-top: 5px; font-size: 0.95rem; font-weight: 600; }
+
+        /* CONTAINER & CARD */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 12px; }
+        .exam-card { background: var(--white); border-radius: 16px; margin-bottom: 20px; border: 3px solid #a5d6a7; box-shadow: 0 6px 12px rgba(88, 139, 44, 0.12); overflow: hidden; }
+        .exam-header { background: linear-gradient(to right, #81c784, #66bb6a); color: white; padding: 16px 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; border-bottom: 2px solid #4caf50; }
+        .exam-header:hover { background: linear-gradient(to right, #66bb6a, #4caf50); }
+        .exam-header .icon { font-size: 1.2rem; transition: transform 0.3s ease; background: rgba(255,255,255,0.2); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .exam-card.active .exam-header .icon { transform: rotate(180deg); }
+        
+        /* CONTENT EXAM */
+        .exam-content { display: none; padding: 20px 15px; background-color: #fafafa; }
+        .exam-card.active .exam-content { display: block; }
+        .question-box { background: var(--white); padding: 16px; border-radius: 12px; margin-bottom: 18px; border: 2px solid #e0e0e0; }
+        .question-text { font-size: 1.05rem; font-weight: 700; color: #2e7d32; margin-bottom: 12px; line-height: 1.5; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.3rem; padding: 0 35px; }
+            .home-btn { width: 38px; height: 38px; left: 10px; }
+            .home-btn svg { width: 20px; height: 20px; }
+        }
+        .option-item { background: #f1f8e9; border: 2px solid #c8e6c9; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; }
+        .option-item:hover { background: #dbedc8; }
+        .option-item input[type="radio"] { margin-right: 10px; accent-color: var(--primary-green); transform: scale(1.2); }
+        
+        /* EXPLANATION & SUBMIT */
+        .explanation-box { display: none; margin-top: 12px; padding: 12px; background-color: #fffde7; border-left: 5px solid var(--farm-yellow); border-radius: 6px; font-size: 0.9rem; line-height: 1.5; }
+        .explanation-box strong { color: var(--farm-orange); }
+        .translation-list { margin-top: 6px; padding-left: 18px; font-style: italic; color: #555; }
+        .question-box.correct { border-color: #4caf50; background-color: #f1f8e9; }
+        .question-box.incorrect { border-color: #f44336; background-color: #ffebee; }
+        .option-item.correct-option { background-color: #c8e6c9 !important; border-color: #4caf50 !important; font-weight: bold; color: #1b5e20; }
+        .option-item.wrong-option { background-color: #ffcdd2 !important; border-color: #e53935 !important; color: #b71c1c; }
+        .btn-submit { display: block; width: 100%; background: linear-gradient(135deg, var(--farm-orange), #ff9800); color: white; border: none; padding: 14px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3); margin-top: 15px; }
+        .score-board { display: none; text-align: center; background: #fff8e1; border: 2px dashed #ffa000; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800; color: #e65100; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- NÚT HOME (Thay # bằng URL trang chủ) -->
+        <a href="#" class="home-btn" title="Trở về Trang chủ">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </a>
+        <h1>🌾 TRẮC NGHIỆM TỪ VỰNG 🚜</h1>
+        <p>Lớp Anh thầy Kết - Nông trại tri thức</p>
+    </header>
+
+    <div class="container" id="exams-container"></div>
+
+    <script>
+        // =========================================================================
+        // DỮ LIỆU ĐỀ THI VỚI ĐẦY ĐỦ ĐÁP ÁN, DỊCH CÁC PHƯƠNG ÁN & DỊCH CÂU
+        // Cấu trúc 1 câu:
+        // q: "Đề bài"
+        // options: ["A", "B", "C", "D"]
+        // ans: "ĐÁP_ÁN"
+        // trans: ["A. ...", "B. ...", "C. ...", "D. ..."]
+        // mean: "Dịch nghĩa toàn câu"
+        // =========================================================================
+
+        const dataExams = [
+            {
+                id: "de1",
+                title: "🌻 ĐỀ 01: Unit 1 - Local Community (Bài 1 - 20)",
+                questions: [
+                    {
+                        q: "1. The local residents are trying to preserve the traditional __________ of the village for future generations.",
+                        options: ["sculpture", "artisan", "craft", "pottery"],
+                        ans: "C",
+                        trans: ["A. sculpture: tác phẩm điêu khắc", "B. artisan: thợ thủ công", "C. craft: nghề thủ công / đồ thủ công", "D. pottery: đồ gốm"],
+                        mean: "Người dân địa phương đang cố gắng giữ gìn nghề thủ công truyền thống của làng cho thế hệ tương lai."
+                    },
+                    {
+                        q: "2. Traditional handicrafts are usually made by skilled __________ who spend years mastering their techniques.",
+                        options: ["community", "artisans", "suburbs", "neighbors"],
+                        ans: "B",
+                        trans: ["A. community: cộng đồng", "B. artisans: các thợ thủ công", "C. suburbs: ngoại thành", "D. neighbors: hàng xóm"],
+                        mean: "Sản phẩm thủ công truyền thống thường được làm bởi những nghệ nhân/thợ thủ công lành nghề."
+                    },
+                    {
+                        q: "3. Hoi An is well-known for its beautiful paper __________, which light up the streets at night.",
+                        options: ["lanterns", "pottery", "town", "statues"],
+                        ans: "A",
+                        trans: ["A. lanterns: đèn lồng", "B. pottery: đồ gốm", "C. town: thị trấn", "D. statues: bức tượng"],
+                        mean: "Hội An nổi tiếng với những chiếc đèn lồng giấy đẹp mắt thắp sáng các con phố về đêm."
+                    },
+                    {
+                        q: "4. Bat Trang is a famous village in Hanoi that produces high-quality __________.",
+                        options: ["silk", "marble", "pottery", "basketry"],
+                        ans: "C",
+                        trans: ["A. silk: lụa", "B. marble: đá cẩm thạch", "C. pottery: đồ gốm sứ", "D. basketry: nghề đan rổ"],
+                        mean: "Bát Tràng là một ngôi làng nổi tiếng ở Hà Nội chuyên sản xuất gốm sứ chất lượng cao."
+                    },
+                    {
+                        q: "5. Living in a close-knit __________ means everyone knows and helps one another.",
+                        options: ["community", "facility", "function", "suburb"],
+                        ans: "A",
+                        trans: ["A. community: cộng đồng (close-knit community: cộng đồng gắn kết)", "B. facility: cơ sở vật chất", "C. function: chức năng", "D. suburb: ngoại ô"],
+                        mean: "Sống trong một cộng đồng gắn kết nghĩa là mọi người đều biết và giúp đỡ lẫn nhau."
+                    },
+                    {
+                        q: "6. The municipal authority decided to __________ the historical building rather than demolish it.",
+                        options: ["waste", "shorten", "remind", "preserve"],
+                        ans: "D",
+                        trans: ["A. waste: lãng phí", "B. shorten: rút ngắn", "C. remind: nhắc nhở", "D. preserve: bảo tồn, giữ gìn"],
+                        mean: "Chính quyền thành phố quyết định bảo tồn tòa nhà lịch sử thay vì phá bỏ nó."
+                    },
+                    {
+                        q: "7. A good village guide can _________ visitors around the historical sites and explain their origin.",
+                        options: ["look", "show", "hand", "pass"],
+                        ans: "B",
+                        trans: ["A. look: nhìn", "B. show: dẫn đi xem (show someone around: dẫn đi tham quan)", "C. hand: đưa/trao", "D. pass: chuyền/qua"],
+                        mean: "Một hướng dẫn viên giỏi có thể dẫn du khách đi tham quan các di tích lịch sử và giải thích nguồn gốc."
+                    },
+                    {
+                        q: "8. My grandmother used to __________ these woollen sweaters by hand during cold winters.",
+                        options: ["weave", "knit", "carve", "mold"],
+                        ans: "B",
+                        trans: ["A. weave: dệt (vải/thảm)", "B. knit: đan (áo len bằng kim đan)", "C. carve: chạm khắc (gỗ/đá)", "D. mold: đúc/nặn"],
+                        mean: "Bà tôi từng đan bằng tay những chiếc áo len này trong những mùa đông lạnh giá."
+                    },
+                    {
+                        q: "9. The craftsmen carefully __________ the wooden block to form a detailed animal statue.",
+                        options: ["cast", "knitted", "carved", "embroidered"],
+                        ans: "C",
+                        trans: ["A. cast: đúc (đồng/sắt)", "B. knitted: đan len", "C. carved: chạm khắc (gỗ)", "D. embroidered: thêu"],
+                        mean: "Những người thợ thủ công đã cẩn thận chạm khắc khối gỗ để tạo thành bức tượng động vật chi tiết."
+                    },
+                    {
+                        q: "10. The government plans to __________ the old community center into a modern youth facility.",
+                        options: ["get", "look", "turn", "cut"],
+                        ans: "C",
+                        trans: ["A. get: lấy/có", "B. look: nhìn", "C. turn: biến thành (turn into: chuyển đổi thành)", "D. cut: cắt"],
+                        mean: "Chính phủ có kế hoạch chuyển đổi trung tâm cộng đồng cũ thành một cơ sở thanh thiếu niên hiện đại."
+                    },
+                    {
+                        q: "11. She wanted to __________ the family tradition of making bronze statues to the next generation.",
+                        options: ["take off", "carry out", "run out of", "pass down"],
+                        ans: "D",
+                        trans: ["A. take off: cất cánh / cởi ra", "B. carry out: tiến hành / thực hiện", "C. run out of: hết / cạn kiệt", "D. pass down: truyền lại (cho thế hệ sau)"],
+                        mean: "Cô ấy muốn truyền lại truyền thống đúc tượng đồng của gia đình cho thế hệ tiếp theo."
+                    },
+                    {
+                        q: "12. They had to __________ the job offer in the city because they wanted to stay in their hometown.",
+                        options: ["turn down", "get on with", "look forward to", "break down"],
+                        ans: "A",
+                        trans: ["A. turn down: từ chối", "B. get on with: hòa thuận với", "C. look forward to: trông chờ / mong mỏi", "D. break down: bị hỏng / hốt hoảng"],
+                        mean: "Họ phải từ chối lời đề nghị công việc ở thành phố vì muốn ở lại quê nhà."
+                    },
+                    {
+                        q: "13. The artisan used his hands to carefully __________ the soft clay into a decorative bowl.",
+                        options: ["embroider", "mold", "weave", "preserve"],
+                        ans: "B",
+                        trans: ["A. embroider: thêu", "B. mold: nặn / tạo hình", "C. weave: dệt", "D. preserve: bảo tồn"],
+                        mean: "Nghệ nhân đã dùng tay cẩn thận nặn khối đất sét mềm thành một chiếc bát trang trí."
+                    },
+                    {
+                        q: "14. We need to __________ trash in public places to keep our neighborhood clean and green.",
+                        options: ["set up", "pick up", "give up", "close down"],
+                        ans: "B",
+                        trans: ["A. set up: thành lập / dựng lên", "B. pick up: nhặt lên / thu gom", "C. give up: từ bỏ", "D. close down: đóng cửa"],
+                        mean: "Chúng ta cần nhặt rác ở những nơi công cộng để giữ cho khu phố sạch và xanh."
+                    },
+                    {
+                        q: "15. My family usually __________ our neighbors very well; we always support each other.",
+                        options: ["faces up to", "comes up with", "gets on with", "looks down on"],
+                        ans: "C",
+                        trans: ["A. face up to: đối mặt với", "B. come up with: nảy ra (ý tưởng)", "C. get on with: ăn ý / hòa thuận với", "D. look down on: coi thường"],
+                        mean: "Gia đình tôi thường rất hòa thuận với hàng xóm; chúng tôi luôn hỗ trợ lẫn nhau."
+                    },
+                    {
+                        q: "16. The local council decided to __________ a new recycling program to reduce waste in the area.",
+                        options: ["set up", "take off", "pass down", "run out"],
+                        ans: "A",
+                        trans: ["A. set up: thành lập / thiết lập", "B. take off: cất cánh", "C. pass down: truyền lại", "D. run out: hết hạn / cạn kiệt"],
+                        mean: "Hội đồng địa phương quyết định thiết lập một chương trình tái chế mới để giảm rác thải trong khu vực."
+                    },
+                    {
+                        q: "17. Due to financial difficulties, many traditional craft workshops have been forced to __________.",
+                        options: ["set up", "get on", "turn up", "close down"],
+                        ans: "D",
+                        trans: ["A. set up: thành lập", "B. get on: lên xe / tiến bộ", "C. turn up: xuất hiện / vặn to", "D. close down: đóng cửa / ngừng hoạt động"],
+                        mean: "Do khó khăn tài chính, nhiều xưởng thủ công truyền thống đã buộc phải đóng cửa."
+                    },
+                    {
+                        q: "18. Non-profit organizations are working hard to __________ historical artifacts in their original condition for future generations.",
+                        options: ["destroy", "preserve", "replace", "abandon"],
+                        ans: "B",
+                        trans: ["A. destroy: phá hủy", "B. preserve: bảo tồn / lưu giữ", "C. replace: thay thế", "D. abandon: bỏ rơi / từ bỏ"],
+                        mean: "Các tổ chức phi lợi nhuận đang nỗ lực bảo tồn các hiện vật lịch sử ở trạng thái nguyên bản cho thế hệ mai sau."
+                    },
+                    {
+                        q: "19. Visiting the ancient village, tourists can purchase authentic local __________ as souvenirs.",
+                        options: ["specialties", "facilities", "surroundings", "suburbanites"],
+                        ans: "A",
+                        trans: ["A. specialties: đặc sản", "B. facilities: cơ sở vật chất", "C. surroundings: môi trường xung quanh", "D. suburbanites: người sống ở ngoại ô"],
+                        mean: "Ghé thăm làng cổ, du khách có thể mua các đặc sản địa phương chính gốc làm quà lưu niệm."
+                    },
+                    {
+                        q: "20. The village is famous for its intricate silk __________, which requires extreme precision.",
+                        options: ["molding", "carving", "weaving", "casting"],
+                        ans: "C",
+                        trans: ["A. molding: sự nặn / đúc", "B. carving: sự chạm khắc", "C. weaving: sự dệt (lụa/vải)", "D. casting: sự đúc (kim loại)"],
+                        mean: "Ngôi làng nổi tiếng với nghề dệt lụa tinh xảo, đòi hỏi sự tỉ mỉ và độ chính xác cao."
+                    }
+                ]
+            },
+            {
+                id: "de2",
+                title: "🐣 ĐỀ 02: Unit 1 - Local Community (Bài 21 - 40)",
+                questions: [
+                    {
+                        q: "21. Community service helps young people build a strong sense of __________ towards their town.",
+                        options: ["attraction", "ownership", "belonging", "relationship"],
+                        ans: "C",
+                        trans: ["A. attraction: sự thu hút", "B. ownership: quyền sở hữu", "C. belonging: sự gắn bó / thuộc về (sense of belonging)", "D. relationship: mối quan hệ"],
+                        mean: "Phục vụ cộng đồng giúp giới trẻ xây dựng ý thức gắn bó mạnh mẽ đối với thị trấn của mình."
+                    },
+                    {
+                        q: "22. We should __________ the importance of protecting our local cultural heritage.",
+                        options: ["emphasize", "neglect", "abandon", "decline"],
+                        ans: "A",
+                        trans: ["A. emphasize: nhấn mạnh", "B. neglect: bỏ mặc / sao lãng", "C. abandon: từ bỏ", "D. decline: từ chối / suy giảm"],
+                        mean: "Chúng ta nên nhấn mạnh tầm quan trọng của việc bảo vệ di sản văn hóa địa phương."
+                    },
+                    {
+                        q: "23. The artisan spent hours trying to __________ the clay into a perfect vase shape.",
+                        options: ["knit", "mold", "weave", "carve"],
+                        ans: "B",
+                        trans: ["A. knit: đan len", "B. mold: nặn / tạo hình", "C. weave: dệt", "D. carve: chạm khắc"],
+                        mean: "Người nghệ nhân đã dành nhiều giờ cố gắng nặn đất sét thành hình một chiếc bình hoàn hảo."
+                    },
+                    {
+                        q: "24. The town's historical museum is a popular tourist __________ that attracts thousands of visitors yearly.",
+                        options: ["construction", "preservation", "collection", "attraction"],
+                        ans: "D",
+                        trans: ["A. construction: sự xây dựng", "B. preservation: sự bảo tồn", "C. collection: bộ sưu tập", "D. attraction: điểm thu hút (tourist attraction)"],
+                        mean: "Bảo tàng lịch sử của thị trấn là một điểm thu hút du khách nổi tiếng, hấp dẫn hàng ngàn lượt khách mỗi năm."
+                    },
+                    {
+                        q: "25. Local authorities are investing in parks, libraries, and other public __________ to improve the quality of life in rural communities.",
+                        options: ["amenities", "handicrafts", "artisans", "suburbs"],
+                        ans: "A",
+                        trans: ["A. amenities: tiện nghi / công trình tiện ích", "B. handicrafts: đồ thủ công", "C. artisans: thợ thủ công", "D. suburbs: ngoại ô"],
+                        mean: "Chính quyền địa phương đang đầu tư vào công viên, thư viện và các tiện ích công cộng khác để nâng cao chất lượng cuộc sống ở vùng nông thôn."
+                    },
+                    {
+                        q: "26. To keep up with modern demands, many craftsmen have to __________ and develop new techniques.",
+                        options: ["destroy", "preserve", "innovate", "abandon"],
+                        ans: "C",
+                        trans: ["A. destroy: phá hủy", "B. preserve: bảo tồn", "C. innovate: đổi mới / sáng tạo", "D. abandon: từ bỏ"],
+                        mean: "Để bắt kịp nhu cầu hiện đại, nhiều người thợ thủ công phải đổi mới sáng tạo và phát triển các kỹ thuật mới."
+                    },
+                    {
+                        q: "27. The project aims to __________ new life into the dying traditional craft of bronze casting.",
+                        options: ["breathe", "give", "make", "do"],
+                        ans: "A",
+                        trans: ["A. breathe: thở (breathe new life into: thổi sức sống mới vào)", "B. give: cho", "C. make: làm", "D. do: làm"],
+                        mean: "Dự án nhằm mục đích thổi sức sống mới vào nghề đúc đồng truyền thống đang dần mai một."
+                    },
+                    {
+                        q: "28. Generational knowledge about medicinal herbs has been __________ by word of mouth.",
+                        options: ["brought up", "handed down", "taken over", "pulled down"],
+                        ans: "B",
+                        trans: ["A. brought up: nuôi dưỡng / đề cập", "B. handed down: lưu truyền / truyền lại", "C. taken over: tiếp quản", "D. pulled down: phá bỏ (tòa nhà)"],
+                        mean: "Tri thức qua nhiều thế hệ về các loại thảo dược đã được lưu truyền bằng hình thức truyền miệng."
+                    },
+                    {
+                        q: "29. Many young people are leaving the countryside to look for better opportunities in _____ areas.",
+                        options: ["mountainous", "rural", "coastal", "urban"],
+                        ans: "D",
+                        trans: ["A. mountainous: miền núi", "B. rural: nông thôn", "C. coastal: duyên hải / ven biển", "D. urban: đô thị / thành thị"],
+                        mean: "Nhiều người trẻ đang rời bỏ quê hương để tìm kiếm những cơ hội tốt hơn ở các khu vực đô thị."
+                    },
+                    {
+                        q: "30. The local government is encouraging residents to buy locally __________ goods to support the economy.",
+                        options: ["sourced", "imported", "processed", "extracted"],
+                        ans: "A",
+                        trans: ["A. sourced: có nguồn gốc từ (locally sourced: nguồn gốc địa phương)", "B. imported: nhập khẩu", "C. processed: chế biến", "D. extracted: chiết xuất"],
+                        mean: "Chính quyền địa phương đang khuyến khích người dân mua hàng hóa có nguồn gốc địa phương để hỗ trợ nền kinh tế."
+                    },
+                    {
+                        q: "31. To maintain high standards, the workshop refuses to __________ quality for mass production.",
+                        options: ["compete", "combine", "compromise", "compare"],
+                        ans: "C",
+                        trans: ["A. compete: cạnh tranh", "B. combine: kết hợp", "C. compromise: thỏa hiệp / đánh đổi làm giảm chất lượng", "D. compare: so sánh"],
+                        mean: "Để duy trì tiêu chuẩn cao, xưởng sản xuất từ chối đánh đổi chất lượng lấy việc sản xuất hàng loạt."
+                    },
+                    {
+                        q: "32. The ancient craft of making lacquerware requires a __________ eye for detail and immense dedication.",
+                        options: ["clear", "bright", "keen", "careless"],
+                        ans: "C",
+                        trans: ["A. clear: rõ ràng", "B. bright: sáng", "C. keen: tinh tường / sắc sảo (keen eye)", "D. careless: cẩu thả"],
+                        mean: "Nghề làm đồ sơn mài cổ truyền đòi hỏi sự tinh tường từng chi tiết nhỏ và sự tận tụy to lớn."
+                    },
+                    {
+                        q: "33. Volunteers came together to __________ the park after the storm had damaged several trees.",
+                        options: ["clean up", "build up", "set out", "break up"],
+                        ans: "A",
+                        trans: ["A. clean up: dọn dẹp sạch sẻ", "B. build up: xây dựng tích lũy", "C. set out: khởi hành", "D. break up: chia tay / đập vỡ"],
+                        mean: "Các tình nguyện viên đã cùng nhau dọn dẹp công viên sau khi trận bão làm hư hại nhiều cây cối."
+                    },
+                    {
+                        q: "34. A strong local economy helps to __________ the livelihoods of small-scale artisans.",
+                        options: ["replace", "decrease", "prevent", "sustain"],
+                        ans: "D",
+                        trans: ["A. replace: thay thế", "B. decrease: giảm sút", "C. prevent: ngăn chặn", "D. sustain: duy trì / chống đỡ"],
+                        mean: "Nền kinh tế địa phương vững mạnh giúp duy trì sinh kế của những người thợ thủ công quy mô nhỏ."
+                    },
+                    {
+                        q: "35. The village elders hope that the younger generation will not turn their __________ on traditional customs.",
+                        options: ["head", "back", "hand", "shoulder"],
+                        ans: "B",
+                        trans: ["A. head: đầu", "B. back: lưng (turn one's back on: quay lưng lại / quay lưng rời bỏ)", "C. hand: tay", "D. shoulder: vai"],
+                        mean: "Các vị cao niên trong làng hy vọng rằng thế hệ trẻ sẽ không quay lưng lại với các phong tục truyền thống."
+                    },
+                    {
+                        q: "36. They are trying to find effective ways to __________ the gap between traditional crafts and modern tastes.",
+                        options: ["cross", "bridge", "fill", "cover"],
+                        ans: "B",
+                        trans: ["A. cross: băng qua", "B. bridge: bắc cầu / thu hẹp (bridge the gap)", "C. fill: lấp đầy", "D. cover: che phủ"],
+                        mean: "Họ đang cố gắng tìm ra những phương pháp hiệu quả để thu hẹp khoảng cách giữa đồ thủ công truyền thống và thị hiếu hiện đại."
+                    },
+                    {
+                        q: "37. Many traditional villages are finding it difficult to __________ a living purely from hand-made crafts.",
+                        options: ["hold", "do", "take", "make"],
+                        ans: "D",
+                        trans: ["A. hold: cầm / giữ", "B. do: làm", "C. take: lấy", "D. make: làm / tạo ra (make a living: kiếm sống)"],
+                        mean: "Nhiều làng nghề truyền thống đang gặp khó khăn trong việc kiếm sống thuần túy từ các sản phẩm thủ công làm bằng tay."
+                    },
+                    {
+                        q: "38. The preservation of local dialects goes hand in __________ with protecting regional identity.",
+                        options: ["hand", "arm", "foot", "heart"],
+                        ans: "A",
+                        trans: ["A. hand: bàn tay (go hand in hand with: song hành / gắn liền với)", "B. arm: cánh tay", "C. foot: bàn chân", "D. heart: trái tim"],
+                        mean: "Việc bảo tồn tiếng địa phương luôn song hành gắn liền với việc bảo vệ bản sắc văn hóa vùng miền."
+                    },
+                    {
+                        q: "39. Community-based tourism gives visitors an __________ insight into the daily lives of local people.",
+                        options: ["identical", "artificial", "authentic", "terrible"],
+                        ans: "C",
+                        trans: ["A. identical: y hệt nhau", "B. artificial: nhân tạo", "C. authentic: chân thực / chính gốc", "D. terrible: tồi tệ"],
+                        mean: "Du lịch dựa vào cộng đồng mang lại cho du khách cái nhìn chân thực về cuộc sống hàng ngày của người dân địa phương."
+                    },
+                    {
+                        q: "40. The town council plans to __________ the old market building to create a modern cultural exhibition center.",
+                        options: ["replace", "renovate", "reject", "reproduce"],
+                        ans: "B",
+                        trans: ["A. replace: thay thế", "B. renovate: cải tạo / trùng tu", "C. reject: bác bỏ", "D. reproduce: tái sản xuất"],
+                        mean: "Hội đồng thị trấn có kế hoạch cải tạo tòa nhà chợ cũ để tạo thành một trung tâm triển lãm văn hóa hiện đại."
+                    }
+                ]
+            }
+            // 💡 Khi thêm Đề 03, Đề 04... Bạn chỉ cần sao chép đoạn cấu trúc trên dán vào đây!
+        ];
+
+        // =========================================================================
+        // CODE HIỂN THỊ CÂU HỎI VÀ GIẢI THÍCH TỰ ĐỘNG
+        // =========================================================================
+        const container = document.getElementById('exams-container');
+
+        dataExams.forEach(exam => {
+            let questionsHTML = '';
+            
+            exam.questions.forEach((qObj, index) => {
+                const labels = ['A', 'B', 'C', 'D'];
+                let optionsHTML = '';
+                
+                // Tạo danh sách 4 phương án
+                qObj.options.forEach((optText, optIdx) => {
+                    const optLabel = labels[optIdx];
+                    optionsHTML += `
+                        <label class="option-item">
+                            <input type="radio" name="q_${exam.id}_${index}" value="${optLabel}">
+                            ${optLabel}. ${optText}
+                        </label>
+                    `;
+                });
+
+                // Tạo danh sách dịch phương án
+                let transListHTML = '';
+                qObj.trans.forEach(t => {
+                    transListHTML += `<li>${t}</li>`;
+                });
+
+                // Khối câu hỏi + Khối giải thích chi tiết
+                questionsHTML += `
+                    <div class="question-box" id="box_${exam.id}_${index}">
+                        <div class="question-text">${qObj.q}</div>
+                        <div class="options-grid">${optionsHTML}</div>
+                        <div class="explanation-box">
+                            <strong>Đáp án đúng: ${qObj.ans}</strong>
+                            <ul class="translation-list">
+                                ${transListHTML}
+                            </ul>
+                            💡 <i>Dịch: ${qObj.mean}</i>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Thẻ Card chứa toàn bộ đề
+            const examCard = document.createElement('div');
+            examCard.className = 'exam-card';
+            examCard.innerHTML = `
+                <div class="exam-header" onclick="toggleExam(this)">
+                    <span>${exam.title}</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="exam-content">
+                    <div class="score-board" id="score_${exam.id}"></div>
+                    <form id="form_${exam.id}">
+                        ${questionsHTML}
+                        <button type="button" class="btn-submit" onclick="checkAnswers('${exam.id}')">NỘP BÀI / XEM ĐÁP ÁN 🌽</button>
+                    </form>
+                </div>
+            `;
+            container.appendChild(examCard);
+        });
+
+        // ẨN / HIỆN NỘI DUNG ĐỀ THI
+        function toggleExam(headerElem) {
+            headerElem.parentElement.classList.toggle('active');
+        }
+
+        // TÍNH ĐIỂM & CHẤM BÀI
+        function checkAnswers(examId) {
+            const examData = dataExams.find(e => e.id === examId);
+            const form = document.getElementById(`form_${examId}`);
+            const scoreBoard = document.getElementById(`score_${examId}`);
+            let correctCount = 0;
+
+            examData.questions.forEach((qObj, index) => {
+                const qBox = document.getElementById(`box_${examId}_${index}`);
+                const expBox = qBox.querySelector('.explanation-box');
+                const options = qBox.querySelectorAll('.option-item');
+                const selected = form.querySelector(`input[name="q_${examId}_${index}"]:checked`);
+
+                // Hiện phần giải thích
+                expBox.style.display = 'block';
+                qBox.classList.remove('correct', 'incorrect');
+                options.forEach(opt => opt.classList.remove('correct-option', 'wrong-option'));
+
+                // Đánh dấu phương án đúng bằng màu xanh
+                options.forEach(opt => {
+                    const radio = opt.querySelector('input');
+                    if (radio.value === qObj.ans) {
+                        opt.classList.add('correct-option');
+                    }
+                });
+
+                // Kiểm tra lựa chọn của học sinh
+                if (selected) {
+                    if (selected.value === qObj.ans) {
+                        correctCount++;
+                        qBox.classList.add('correct');
+                    } else {
+                        qBox.classList.add('incorrect');
+                        selected.parentElement.classList.add('wrong-option');
+                    }
+                } else {
+                    qBox.classList.add('incorrect'); // Chưa làm
+                }
+            });
+
+            // Hiển thị tổng số câu đúng
+            scoreBoard.style.display = 'block';
+            scoreBoard.innerHTML = `🎉 BẠN ĐÃ ĐẠT: ${correctCount}/${examData.questions.length} CÂU ĐÚNG! 🎉`;
+            scoreBoard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
